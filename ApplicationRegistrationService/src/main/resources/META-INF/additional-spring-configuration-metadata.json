@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "ar.ssa-web.url",
+    "type": "java.lang.String",
+    "description": "A description for 'ar.ssa-web.url'"
+  },
+  {
+    "name": "ar.state",
+    "type": "java.lang.String",
+    "description": "A description for 'ar.state'"
+  }
+]}
