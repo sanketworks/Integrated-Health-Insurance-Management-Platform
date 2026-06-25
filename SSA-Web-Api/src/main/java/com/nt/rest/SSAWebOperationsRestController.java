@@ -10,34 +10,41 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/ssa-web-api")
 public class SSAWebOperationsRestController {
-	@GetMapping("/find/{ssn}")
-	public ResponseEntity<String> getStateBySSN(@PathVariable String ssn){
-		// Validate SSN: exactly 9 digits only
-        if (ssn == null || !ssn.matches("\\d{9}")) {
-            return new ResponseEntity<>("Invalid SSN. SSN must contain exactly 9 digits.", HttpStatus.BAD_REQUEST);
+
+    @GetMapping("/find/{ssn}")
+    public ResponseEntity<String> getStateBySSN(
+            @PathVariable Long ssn) {
+
+        // Validate that SSN contains exactly 9 digits.
+        if (ssn == null ||
+                ssn < 100_000_000L ||
+                ssn > 999_999_999L) {
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(
+                        "Invalid SSN. SSN must contain exactly 9 digits."
+                    );
         }
-        // Get last two digits
-        String stateCode = ssn.substring(ssn.length() - 2);
-        switch (stateCode) {
-        case "01":
-            return ResponseEntity.ok("Washington DC");
 
-        case "02":
-            return ResponseEntity.ok("Ohio");
+        // Extract the last two digits without converting to String.
+        int stateCode = (int) (ssn % 100);
 
-        case "03":
-            return ResponseEntity.ok("Texas");
+        return switch (stateCode) {
 
-        case "04":
-            return ResponseEntity.ok("California");
+            case 1 -> ResponseEntity.ok("Washington DC");
 
-        case "05":
-            return ResponseEntity.ok("Florida");
+            case 2 -> ResponseEntity.ok("Ohio");
 
-        default:
-            return new ResponseEntity<>("Invalid SSN state code.", HttpStatus.BAD_REQUEST);
+            case 3 -> ResponseEntity.ok("Texas");
+
+            case 4 -> ResponseEntity.ok("California");
+
+            case 5 -> ResponseEntity.ok("Florida");
+
+            default -> ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid SSN state code.");
+        };
     }
-		
-	}
-
 }
